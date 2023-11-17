@@ -12,6 +12,7 @@ class GuessPageState extends State<GuessPage> {
   TextEditingController inputWordController = TextEditingController();
   final WordAnalyzer wordAnalyzer = WordAnalyzer();
   String article = "Texte de base pour tester, banane bananier";
+  Set<String> revealedWords = <String>{};
 
   @override
   void dispose() {
@@ -36,17 +37,19 @@ class GuessPageState extends State<GuessPage> {
               child: Wrap(
                 spacing: 8.0,
                 runSpacing: 4.0,
-                children: words
-                    .map((word) => Container(
-                          padding: const EdgeInsets.all(8.0),
-                          margin: const EdgeInsets.symmetric(vertical: 2.0),
-                          decoration: BoxDecoration(
-                            color: Colors.blue.shade100,
-                            borderRadius: BorderRadius.circular(4.0),
-                          ),
-                          child: Text(word),
-                        ))
-                    .toList(),
+                children: words.map((word) {
+                  String displayWord =
+                      revealedWords.contains(word) ? word : ' ' * word.length;
+                  return Container(
+                    padding: const EdgeInsets.all(8.0),
+                    margin: const EdgeInsets.symmetric(vertical: 2.0),
+                    decoration: BoxDecoration(
+                      color: Colors.blue.shade100,
+                      borderRadius: BorderRadius.circular(4.0),
+                    ),
+                    child: Text(displayWord),
+                  );
+                }).toList(),
               ),
             ),
             const SizedBox(height: 20),
@@ -62,7 +65,7 @@ class GuessPageState extends State<GuessPage> {
             ElevatedButton(
               onPressed: () {
                 String inputWord = inputWordController.text;
-                wordAnalyzer.findSimilarWords(inputWord, article);
+                wordAnalyzer.findSimilarWords(inputWord, article, revealWord);
               },
               child: const Text("Chercher"),
             ),
@@ -70,5 +73,11 @@ class GuessPageState extends State<GuessPage> {
         ),
       ),
     );
+  }
+
+  void revealWord(String word) {
+    setState(() {
+      revealedWords.add(word);
+    });
   }
 }
