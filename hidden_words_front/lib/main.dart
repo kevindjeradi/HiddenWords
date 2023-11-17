@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hidden_words_front/views/guess_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -14,7 +15,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const Text("data"),
+      home: const GuessPage(),
     );
   }
 }
