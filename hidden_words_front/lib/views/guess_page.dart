@@ -13,6 +13,7 @@ class GuessPageState extends State<GuessPage> {
   final WordAnalyzer wordAnalyzer = WordAnalyzer();
   String article = "Texte de base pour tester, banane bananier";
   Set<String> revealedWords = <String>{};
+  Map<String, String> bestGuesses = {};
 
   @override
   void dispose() {
@@ -38,8 +39,11 @@ class GuessPageState extends State<GuessPage> {
                 spacing: 8.0,
                 runSpacing: 4.0,
                 children: words.map((word) {
-                  String displayWord =
-                      revealedWords.contains(word) ? word : ' ' * word.length;
+                  String displayWord = revealedWords.contains(word)
+                      ? word
+                      : bestGuesses[word] ?? ' ' * word.length;
+                  bool isBestGuess = bestGuesses.containsKey(word);
+
                   return Container(
                     padding: const EdgeInsets.all(8.0),
                     margin: const EdgeInsets.symmetric(vertical: 2.0),
@@ -47,7 +51,14 @@ class GuessPageState extends State<GuessPage> {
                       color: Colors.blue.shade100,
                       borderRadius: BorderRadius.circular(4.0),
                     ),
-                    child: Text(displayWord),
+                    child: Text(
+                      displayWord,
+                      style: TextStyle(
+                        fontStyle:
+                            isBestGuess ? FontStyle.italic : FontStyle.normal,
+                        color: isBestGuess ? Colors.red : Colors.black,
+                      ),
+                    ),
                   );
                 }).toList(),
               ),
@@ -75,9 +86,19 @@ class GuessPageState extends State<GuessPage> {
     );
   }
 
-  void revealWord(String word) {
+  void revealWord(String word, String guess, double similarity) {
     setState(() {
-      revealedWords.add(word);
+      if (revealedWords.contains(word)) {
+        return;
+      }
+
+      if (similarity == 1) {
+        revealedWords.add(word);
+        bestGuesses.remove(word);
+      } else if (!bestGuesses.containsKey(word) ||
+          similarity >= WordAnalyzer().getSimilarity(bestGuesses[word], word)) {
+        bestGuesses[word] = guess;
+      }
     });
   }
 }
