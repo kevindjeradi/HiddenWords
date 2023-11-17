@@ -1,6 +1,7 @@
 // server.js
 const express = require('express');
 const mongoose = require('mongoose');
+const articleRoutes = require('./routes/articleRoutes');
 const cors = require('cors');
 
 const app = express();
@@ -23,6 +24,8 @@ app.use(express.json());
 app.get('/', (req, res) => {
   res.send('Yo');
 });
+
+app.use('/', articleRoutes);
 
 app.listen(PORT, '0.0.0.0', function() {
   console.log(`Server is running on http://localhost:${PORT}`);
