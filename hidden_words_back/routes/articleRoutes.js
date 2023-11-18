@@ -3,6 +3,16 @@ const express = require('express');
 const router = express.Router();
 const Article = require('../models/article');
 
+// GET /articles to retrieve all articles
+router.get('/articles', async (req, res) => {
+    try {
+        const articles = await Article.find({});
+        res.json(articles);
+    } catch (error) {
+        res.status(500).send('Error fetching articles ' + error);
+    }
+});
+
 // GET /article/:id
 router.get('/article/:id', async (req, res) => {
 try {

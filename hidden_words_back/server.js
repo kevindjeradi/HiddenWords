@@ -2,6 +2,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const articleRoutes = require('./routes/articleRoutes');
+const wikiRoutes = require('./routes/wikiRoutes');
 const cors = require('cors');
 
 const app = express();
@@ -26,6 +27,7 @@ app.get('/', (req, res) => {
 });
 
 app.use('/', articleRoutes);
+app.use('/', wikiRoutes);
 
 app.listen(PORT, '0.0.0.0', function() {
   console.log(`Server is running on http://localhost:${PORT}`);
