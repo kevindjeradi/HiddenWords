@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 
 class Api {
   static final TokenService _tokenService = TokenService();
-  static final String baseUrl = dotenv.env['API_URL'] ?? 'http://10.0.2.2:3000';
+  static final String baseUrl = dotenv.env['API_URL'] ?? 'http://10.0.2.2:3001';
 
   Future<http.Response> _handleRequest(
       Future<http.Response> Function() action) async {
@@ -28,7 +28,7 @@ class Api {
   Future<http.Response> get(String url) async {
     final token = await _tokenService.getToken() ?? 'Token vide';
     return _handleRequest(() => http.get(
-          Uri.parse(url),
+          Uri.parse(baseUrl + url),
           headers: {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer $token',
@@ -39,7 +39,7 @@ class Api {
   Future<http.Response> post(String url, Map<String, dynamic> data) async {
     final token = await _tokenService.getToken() ?? 'Token vide';
     return _handleRequest(() => http.post(
-          Uri.parse(url),
+          Uri.parse(baseUrl + url),
           headers: {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer $token',
@@ -51,7 +51,7 @@ class Api {
   Future<http.Response> put(String url, Map<String, dynamic> data) async {
     final token = await _tokenService.getToken() ?? 'Token vide';
     return _handleRequest(() => http.put(
-          Uri.parse(url),
+          Uri.parse(baseUrl + url),
           headers: {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer $token',
@@ -63,7 +63,7 @@ class Api {
   Future<http.Response> patch(String url, Map<String, dynamic> data) async {
     final token = await _tokenService.getToken() ?? 'Token vide';
     return _handleRequest(() => http.patch(
-          Uri.parse(url),
+          Uri.parse(baseUrl + url),
           headers: {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer $token',
@@ -75,7 +75,7 @@ class Api {
   Future<http.Response> delete(String url) async {
     final token = await _tokenService.getToken() ?? 'Token vide';
     return _handleRequest(() => http.delete(
-          Uri.parse(url),
+          Uri.parse(baseUrl + url),
           headers: {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer $token',
