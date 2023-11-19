@@ -1,3 +1,4 @@
+// views/landing_page.dart
 import 'package:flutter/material.dart';
 import 'package:hidden_words_front/views/guess_page.dart';
 
