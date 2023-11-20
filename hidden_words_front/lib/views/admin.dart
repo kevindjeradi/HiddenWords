@@ -77,6 +77,8 @@ class AdminState extends State<Admin> {
 
   @override
   Widget build(BuildContext context) {
+    List<String> contentLines = currentArticle?.content.split('\n') ?? [];
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Admin Page'),
@@ -89,16 +91,43 @@ class AdminState extends State<Admin> {
               ),
             )
           : SingleChildScrollView(
+              padding: const EdgeInsets.all(10.0),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   ElevatedButton(
                     onPressed: fetchArticle,
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: Theme.of(context).primaryColor),
                     child: const Text('Changer d\'article'),
                   ),
-                  Text(currentArticle!.title),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Text(currentArticle!.title,
+                        style: Theme.of(context).textTheme.titleLarge),
+                  ),
                   GestureDetector(
                     onTap: showEditContentDialog,
-                    child: Text(currentArticle!.content),
+                    child: Container(
+                      height: 350,
+                      padding: const EdgeInsets.all(8.0),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey),
+                        borderRadius: BorderRadius.circular(5.0),
+                      ),
+                      child: SingleChildScrollView(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: contentLines
+                              .map((line) => Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 4.0),
+                                    child: Text(line),
+                                  ))
+                              .toList(),
+                        ),
+                      ),
+                    ),
                   ),
                   TextField(
                     controller: themeController,
