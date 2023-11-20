@@ -1,13 +1,13 @@
 // models\article.dart
 class Article {
-  final String title;
-  final String content;
-  final String theme;
-  final String url;
-  final String difficulty;
-  final List<String> hints;
-  final Set<String> revealedWords;
-  final Map<String, String> bestGuesses;
+  String title;
+  String content;
+  String theme;
+  String url;
+  String difficulty;
+  List<String> hints;
+  Set<String> revealedWords;
+  Map<String, String> bestGuesses;
 
   Article({
     required this.title,
