@@ -74,10 +74,17 @@ class InfernalModeState extends State<InfernalMode> {
     return "!.,;:'\"?()-".contains(word);
   }
 
-  Widget _buildWordContainer(String word, bool isBestGuess, bool isObfuscated) {
+  Widget _buildWordContainer(
+    String word,
+    bool isBestGuess,
+    bool isObfuscated, {
+    bool isTitle = false,
+  }) {
     return Container(
       padding: const EdgeInsets.all(8.0),
-      margin: const EdgeInsets.symmetric(vertical: 2.0),
+      margin: isTitle
+          ? const EdgeInsets.symmetric(vertical: 16.0)
+          : const EdgeInsets.symmetric(vertical: 2.0),
       decoration: BoxDecoration(
         color: Colors.blue.shade100,
         borderRadius: BorderRadius.circular(4.0),
@@ -87,6 +94,7 @@ class InfernalModeState extends State<InfernalMode> {
         style: TextStyle(
           fontStyle:
               isObfuscated && isBestGuess ? FontStyle.italic : FontStyle.normal,
+          fontWeight: isTitle ? FontWeight.bold : FontWeight.normal,
           color: isObfuscated && isBestGuess ? Colors.red : Colors.black,
         ),
       ),
@@ -139,6 +147,31 @@ class InfernalModeState extends State<InfernalMode> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: lines.map((line) {
+                                  // Check if the line is a title
+                                  if (line.startsWith('{{{') &&
+                                      line.endsWith('}}}')) {
+                                    String title = line
+                                        .substring(3, line.length - 3)
+                                        .trim();
+
+                                    String displayWord = isTextVisible
+                                        ? title
+                                        : gameLogic.currentArticle.revealedWords
+                                                .contains(title)
+                                            ? title
+                                            : gameLogic.currentArticle
+                                                    .bestGuesses[title] ??
+                                                ' ' * title.length;
+                                    bool isBestGuess = gameLogic
+                                        .currentArticle.bestGuesses
+                                        .containsKey(title);
+
+                                    return _buildWordContainer(
+                                        displayWord, isBestGuess, true,
+                                        isTitle: true);
+                                  }
+
+                                  // Process normal lines
                                   List<String> words = line.split(' ');
                                   return Wrap(
                                     spacing: 8.0,
