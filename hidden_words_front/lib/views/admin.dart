@@ -118,13 +118,25 @@ class AdminState extends State<Admin> {
                       child: SingleChildScrollView(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: contentLines
-                              .map((line) => Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 4.0),
-                                    child: Text(line),
-                                  ))
-                              .toList(),
+                          children: contentLines.map((line) {
+                            bool isTitle =
+                                line.startsWith('{{{') && line.endsWith('}}}');
+                            String displayText = isTitle
+                                ? line.substring(3, line.length - 3)
+                                : line;
+                            return Padding(
+                              padding: EdgeInsets.symmetric(
+                                  vertical: isTitle ? 8.0 : 4.0),
+                              child: Text(
+                                displayText,
+                                style: TextStyle(
+                                  fontWeight: isTitle
+                                      ? FontWeight.bold
+                                      : FontWeight.normal,
+                                ),
+                              ),
+                            );
+                          }).toList(),
                         ),
                       ),
                     ),
