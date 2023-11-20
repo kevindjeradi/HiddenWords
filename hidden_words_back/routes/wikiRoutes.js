@@ -45,6 +45,16 @@ router.get('/random-wikipedia-article', async (req, res) => {
                 const sections = fullText.split(/(\n={2,3} [^=]+ ={2,3}\n)/);
                 contentToShow = sections[0]; // Intro section
                 
+                // Process each section
+                for (let i = 1; i < sections.length; i += 2) {
+                    // Extract the title text and encapsulate it with "{{{" and "}}}"
+                    const titleText = sections[i].trim();
+                    const encapsulatedTitle = `{{{ ${titleText} }}}`;
+                
+                    // Append the title and content to the output
+                    contentToShow += `\n${encapsulatedTitle}\n${sections[i + 1]}`;
+                }
+
                 // Remove consecutive newline characters, equals signs, and spaces
                 fullText = fullText.replace(/\n{2,}/g, '\n')
                             .replace(/={2,}/g, '')
