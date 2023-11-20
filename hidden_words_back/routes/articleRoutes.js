@@ -29,11 +29,22 @@ try {
 // POST /article to create a new article
 router.post('/article', async (req, res) => {
     try {
-        const { title, content } = req.body;
+        const { title, content, theme, url, hints, difficulty } = req.body;
+
         if (!title || !content) {
             return res.status(400).send('Title and content are required');
         }
-        const newArticle = new Article({ title, content });
+
+        // Create an object to hold the article data
+        let articleData = { title, content };
+
+        // Add other fields if they are not null or empty
+        if (theme) articleData.theme = theme;
+        if (url) articleData.url = url;
+        if (hints && hints.length > 0) articleData.hints = hints;
+        if (difficulty) articleData.difficulty = difficulty;
+
+        const newArticle = new Article(articleData);
         await newArticle.save();
         res.status(201).json(newArticle);
     } catch (error) {

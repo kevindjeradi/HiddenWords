@@ -82,26 +82,4 @@ router.get('/random-wikipedia-article', async (req, res) => {
     }
 });
 
-
-// POST route to create a new article
-router.post('/create-article-from-wikipedia', async (req, res) => {
-    try {
-        const { title, content, url } = req.body;
-
-        // Simple validation
-        if (!title || !content || !url) {
-            return res.status(400).send('Title, content, and URL are required.');
-        }
-
-        // Create a new article using the Article model
-        const newArticle = new Article({ title, content, url });
-        await newArticle.save();
-
-        res.status(201).json(newArticle);
-    } catch (error) {
-        console.error(error.message);
-        res.status(500).send(`Error creating article: ${error.message}`);
-    }
-});
-
 module.exports = router;
