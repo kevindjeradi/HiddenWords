@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hidden_words_front/helpers/logger.dart';
 import 'package:hidden_words_front/models/article.dart';
 import 'package:hidden_words_front/services/article_service.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class Admin extends StatefulWidget {
   const Admin({super.key});
@@ -35,6 +36,13 @@ class AdminState extends State<Admin> {
         contentController.text = currentArticle!.content;
         Log.logger.i(currentArticle.toString());
       });
+    }
+  }
+
+  void _launchURL(String urlString) async {
+    final Uri url = Uri.parse(urlString);
+    if (!await launchUrl(url)) {
+      throw Exception('Could not launch $url');
     }
   }
 
@@ -106,71 +114,96 @@ class AdminState extends State<Admin> {
                     child: Text(currentArticle!.title,
                         style: Theme.of(context).textTheme.titleLarge),
                   ),
-                  GestureDetector(
-                    onTap: showEditContentDialog,
-                    child: Container(
-                      height: 350,
-                      padding: const EdgeInsets.all(8.0),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey),
-                        borderRadius: BorderRadius.circular(5.0),
-                      ),
-                      child: SingleChildScrollView(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: contentLines.map((line) {
-                            bool isTitle =
-                                line.startsWith('{{{') && line.endsWith('}}}');
-                            String displayText = isTitle
-                                ? line.substring(3, line.length - 3)
-                                : line;
-                            return Padding(
-                              padding: EdgeInsets.symmetric(
-                                  vertical: isTitle ? 8.0 : 4.0),
-                              child: Text(
-                                displayText,
-                                style: TextStyle(
-                                  fontWeight: isTitle
-                                      ? FontWeight.bold
-                                      : FontWeight.normal,
-                                ),
-                              ),
-                            );
-                          }).toList(),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: GestureDetector(
+                      onTap: () => _launchURL(currentArticle!.url),
+                      child: Text(
+                        currentArticle!.url,
+                        style: const TextStyle(
+                          color: Colors.blue,
+                          decoration: TextDecoration.underline,
                         ),
                       ),
                     ),
                   ),
-                  TextField(
-                    controller: themeController,
-                    decoration: const InputDecoration(hintText: 'Thème'),
-                  ),
-                  TextField(
-                    controller: difficultyController,
-                    decoration: const InputDecoration(hintText: 'Difficulté'),
-                  ),
-                  ...List.generate(hintControllers.length, (index) {
-                    return Row(
-                      children: [
-                        Expanded(
-                          child: TextField(
-                            controller: hintControllers[index],
-                            decoration: InputDecoration(
-                              hintText: 'Indice ${index + 1}',
-                            ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: GestureDetector(
+                      onTap: showEditContentDialog,
+                      child: Container(
+                        height: 350,
+                        padding: const EdgeInsets.all(8.0),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey),
+                          borderRadius: BorderRadius.circular(5.0),
+                        ),
+                        child: SingleChildScrollView(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: contentLines.map((line) {
+                              bool isTitle = line.startsWith('{{{') &&
+                                  line.endsWith('}}}');
+                              String displayText = isTitle
+                                  ? line.substring(3, line.length - 3)
+                                  : line;
+                              return Padding(
+                                padding: EdgeInsets.symmetric(
+                                    vertical: isTitle ? 8.0 : 4.0),
+                                child: Text(
+                                  displayText,
+                                  style: TextStyle(
+                                    fontWeight: isTitle
+                                        ? FontWeight.bold
+                                        : FontWeight.normal,
+                                  ),
+                                ),
+                              );
+                            }).toList(),
                           ),
                         ),
-                        if (hintControllers.length > 1)
-                          IconButton(
-                            icon: const Icon(Icons.remove),
-                            onPressed: () => removeHintField(index),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: TextField(
+                      controller: themeController,
+                      decoration: const InputDecoration(hintText: 'Thème'),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: TextField(
+                      controller: difficultyController,
+                      decoration: const InputDecoration(hintText: 'Difficulté'),
+                    ),
+                  ),
+                  ...List.generate(hintControllers.length, (index) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              controller: hintControllers[index],
+                              decoration: InputDecoration(
+                                hintText: 'Indice ${index + 1}',
+                              ),
+                            ),
                           ),
-                        if (index == hintControllers.length - 1)
-                          IconButton(
-                            icon: const Icon(Icons.add),
-                            onPressed: addHintField,
-                          ),
-                      ],
+                          if (hintControllers.length > 1)
+                            IconButton(
+                              icon: const Icon(Icons.remove),
+                              onPressed: () => removeHintField(index),
+                            ),
+                          if (index == hintControllers.length - 1)
+                            IconButton(
+                              icon: const Icon(Icons.add),
+                              onPressed: addHintField,
+                            ),
+                        ],
+                      ),
                     );
                   }),
                   ElevatedButton(
