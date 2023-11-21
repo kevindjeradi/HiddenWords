@@ -60,9 +60,7 @@ router.get('/random-wikipedia-article', async (req, res) => {
                             .replace(/={2,}/g, '')
                             .replace(/ {2,}/g, ' ');
 
-
                 if (sections.length > 3) {
-
                     for (let i = 1; i < sections.length && i <= 2; i++) {
                         // Extract and clean the title text
                         const titleMatch = sections[i].match(/={2,3} ([^=]+) ={2,3}/);
