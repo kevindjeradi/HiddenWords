@@ -1,7 +1,7 @@
 // views/landing_page.dart
 import 'package:flutter/material.dart';
-import 'package:hidden_words_front/views/admin.dart';
-import 'package:hidden_words_front/views/infernal_mode.dart';
+import 'package:hidden_words_front/views/admin/admin.dart';
+import 'package:hidden_words_front/views/gamemodes/infernal_mode.dart';
 
 class LandingPage extends StatefulWidget {
   const LandingPage({super.key});
