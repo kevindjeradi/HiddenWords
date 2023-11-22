@@ -32,6 +32,7 @@ class AddArticleState extends State<AddArticle> {
     if (articleData != null) {
       setState(() {
         currentArticle = Article(
+            id: articleData['id'] ?? '',
             title: articleData['title'],
             content: articleData['contentToShow'],
             url: articleData['url'],

@@ -1,6 +1,7 @@
 // views/landing_page.dart
 import 'package:flutter/material.dart';
 import 'package:hidden_words_front/views/admin/add_article.dart';
+import 'package:hidden_words_front/views/admin/list_articles.dart';
 
 class Admin extends StatefulWidget {
   const Admin({super.key});
@@ -43,11 +44,25 @@ class _AdminState extends State<Admin> {
                 SizedBox(
                   width: 200,
                   child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const ListArticles(),
+                        ),
+                      );
+                    },
+                    child: const Text('Lister les articles'),
+                  ),
+                ),
+                SizedBox(
+                  width: 200,
+                  child: ElevatedButton(
                     style: ButtonStyle(
                         backgroundColor:
                             MaterialStateProperty.all(Colors.grey[400])),
                     onPressed: () {},
-                    child: const Text('Lister les articles (à venir)'),
+                    child: const Text('Je sais pas encore (à venir)'),
                   ),
                 ),
               ],
