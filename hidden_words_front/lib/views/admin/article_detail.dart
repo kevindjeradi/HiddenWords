@@ -1,3 +1,4 @@
+// article_detail.dart
 import 'package:flutter/material.dart';
 import 'package:hidden_words_front/logic/difficulties.dart';
 import 'package:hidden_words_front/logic/themes.dart';
@@ -31,8 +32,15 @@ class ArticleDetailState extends State<ArticleDetail> {
     super.initState();
     currentArticle = widget.article;
     contentController.text = currentArticle.content;
-    selectedTheme = currentArticle.theme;
-    selectedDifficulty = currentArticle.difficulty;
+
+    selectedTheme = articlesThemes.contains(currentArticle.theme)
+        ? currentArticle.theme
+        : articlesThemes.first;
+    selectedDifficulty =
+        articlesDifficulties.contains(currentArticle.difficulty)
+            ? currentArticle.difficulty
+            : articlesDifficulties.first;
+
     hintControllers = currentArticle.hints
         .map((hint) => TextEditingController(text: hint))
         .toList();
@@ -87,6 +95,8 @@ class ArticleDetailState extends State<ArticleDetail> {
 
   @override
   Widget build(BuildContext context) {
+    List<String> contentLines = currentArticle.content.split('\n');
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(10.0),
       child: Column(
@@ -117,17 +127,36 @@ class ArticleDetailState extends State<ArticleDetail> {
           ),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 8.0),
-            child: Container(
-              height: 350,
-              padding: const EdgeInsets.all(8.0),
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey),
-                borderRadius: BorderRadius.circular(5.0),
-              ),
-              child: SingleChildScrollView(
-                child: Text(
-                  contentController.text,
-                  style: const TextStyle(fontSize: 16.0),
+            child: GestureDetector(
+              onTap: showEditContentDialog,
+              child: Container(
+                height: 350,
+                padding: const EdgeInsets.all(8.0),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey),
+                  borderRadius: BorderRadius.circular(5.0),
+                ),
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: contentLines.map((line) {
+                      bool isTitle =
+                          line.startsWith('{{{') && line.endsWith('}}}');
+                      String displayText =
+                          isTitle ? line.substring(3, line.length - 3) : line;
+                      return Padding(
+                        padding:
+                            EdgeInsets.symmetric(vertical: isTitle ? 8.0 : 4.0),
+                        child: Text(
+                          displayText,
+                          style: TextStyle(
+                            fontWeight:
+                                isTitle ? FontWeight.bold : FontWeight.normal,
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
                 ),
               ),
             ),
@@ -211,6 +240,43 @@ class ArticleDetailState extends State<ArticleDetail> {
           ),
         ],
       ),
+    );
+  }
+
+  void showEditContentDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        TextEditingController dialogController =
+            TextEditingController(text: currentArticle.content);
+        return AlertDialog(
+          title: const Text("Editer le contenu"),
+          content: TextField(
+            controller: dialogController,
+            decoration: const InputDecoration(hintText: 'Contenu'),
+            maxLines: null,
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Annuler'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Sauvegarder'),
+              onPressed: () {
+                setState(() {
+                  contentController.text = dialogController.text;
+                  currentArticle =
+                      currentArticle.copyWith(content: dialogController.text);
+                });
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }
