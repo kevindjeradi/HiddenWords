@@ -52,4 +52,26 @@ router.post('/article', async (req, res) => {
     }
 });
 
+// PUT /article/:id to update an existing article
+router.put('/article/:id', async (req, res) => {
+    try {
+        const { title, content, theme, url, hints, difficulty } = req.body;
+        const articleData = { title, content, theme, url, hints, difficulty };
+        
+        const updatedArticle = await Article.findByIdAndUpdate(
+            req.params.id,
+            articleData,
+            { new: true }
+        );
+        
+        if (!updatedArticle) {
+            return res.status(404).send('Article not found');
+        }
+        
+        res.json(updatedArticle);
+    } catch (error) {
+        res.status(500).send('Error updating article ' + error);
+    }
+});
+
 module.exports = router;
