@@ -19,6 +19,21 @@ class ArticleService {
     }
   }
 
+  Future<List<Article>> fetchAllArticles() async {
+    try {
+      final response = await Api().get('/articles');
+      if (response.statusCode == 200) {
+        Iterable l = json.decode(response.body);
+        return List<Article>.from(l.map((model) => Article.fromJson(model)));
+      } else {
+        throw Exception('Failed to load articles');
+      }
+    } catch (e) {
+      Log.logger.e("Error in fetchAllArticles: $e");
+      rethrow;
+    }
+  }
+
   Future<void> createArticle(Article article) async {
     try {
       final response = await Api().post(
@@ -35,6 +50,26 @@ class ArticleService {
       }
     } catch (e) {
       Log.logger.e("Error in createArticle: $e");
+      rethrow;
+    }
+  }
+
+  Future<void> updateArticle(Article article) async {
+    try {
+      final response = await Api().put(
+        '/article/${article.id}',
+        article.toJson(),
+      );
+
+      if (response.statusCode == 200) {
+        Log.logger.i("Article updated successfully");
+      } else {
+        Log.logger
+            .e("Failed to update article. Status code: ${response.statusCode}");
+        throw Exception('Failed to update article');
+      }
+    } catch (e) {
+      Log.logger.e("Error in updateArticle: $e");
       rethrow;
     }
   }

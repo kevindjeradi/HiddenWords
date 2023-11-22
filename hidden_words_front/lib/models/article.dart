@@ -1,5 +1,6 @@
 // models\article.dart
 class Article {
+  String id;
   String title;
   String content;
   String theme;
@@ -10,6 +11,7 @@ class Article {
   Map<String, String> bestGuesses;
 
   Article({
+    required this.id,
     required this.title,
     required this.content,
     this.theme = '',
@@ -22,6 +24,7 @@ class Article {
 
   factory Article.fromJson(Map<String, dynamic> json) {
     return Article(
+      id: json['_id'] ?? '',
       title: json['title'],
       content: json['content'],
       theme: json['theme'] ?? '',
@@ -35,6 +38,7 @@ class Article {
 
   Map<String, dynamic> toJson() {
     return {
+      '_id': id,
       'title': title,
       'content': content,
       'theme': theme,
@@ -57,6 +61,7 @@ class Article {
     Map<String, String>? bestGuesses,
   }) {
     return Article(
+      id: id,
       title: title ?? this.title,
       content: content ?? this.content,
       theme: theme ?? this.theme,
