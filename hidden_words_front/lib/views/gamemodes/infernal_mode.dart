@@ -22,6 +22,7 @@ class InfernalModeState extends State<InfernalMode> {
     super.initState();
     // Initialize gameLogic with a default Article
     gameLogic = GameLogic(Article(
+      id: '',
       title: 'Default Title',
       content: 'Default Content',
       theme: '',

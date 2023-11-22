@@ -19,6 +19,7 @@ class GameLogic {
 
       if (articleData != null) {
         currentArticle = Article(
+          id: articleData['id'],
           title: articleData['title'],
           url: articleData['url'],
           content: articleData['contentToShow'],
