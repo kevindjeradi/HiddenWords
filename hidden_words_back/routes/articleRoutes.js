@@ -26,6 +26,23 @@ try {
 }
 });
 
+// GET /random-article to retrieve a random article
+router.get('/random-article', async (req, res) => {
+    try {
+        const randomArticle = await Article.aggregate([
+            { $sample: { size: 1 } }
+        ]);
+
+        if (!randomArticle.length) {
+            return res.status(404).send('No articles found');
+        }
+
+        res.json(randomArticle[0]);
+    } catch (error) {
+        res.status(500).send('Error fetching random article ' + error);
+    }
+});
+
 // POST /article to create a new article
 router.post('/article', async (req, res) => {
     try {
