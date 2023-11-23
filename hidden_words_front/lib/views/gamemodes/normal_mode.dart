@@ -1,17 +1,17 @@
-// views/infernal_mode.dart
+// views/normal_mode.dart
 import 'package:flutter/material.dart';
 import 'package:hidden_words_front/logic/game_logic.dart';
 import 'package:hidden_words_front/logic/world_analyzer.dart';
 import 'package:hidden_words_front/models/article.dart';
 
-class InfernalMode extends StatefulWidget {
-  const InfernalMode({super.key});
+class NormalMode extends StatefulWidget {
+  const NormalMode({super.key});
 
   @override
-  InfernalModeState createState() => InfernalModeState();
+  NormalModeState createState() => NormalModeState();
 }
 
-class InfernalModeState extends State<InfernalMode> {
+class NormalModeState extends State<NormalMode> {
   TextEditingController inputWordController = TextEditingController();
   late GameLogic gameLogic;
   bool isTextVisible = false;
@@ -22,7 +22,7 @@ class InfernalModeState extends State<InfernalMode> {
     super.initState();
     // Initialize gameLogic with a default Article
     gameLogic = GameLogic(
-        "infernal_mode",
+        "normal_mode",
         Article(
           id: '',
           title: 'Default Title',
