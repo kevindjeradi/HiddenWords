@@ -100,7 +100,7 @@ class ArticleDetailState extends State<ArticleDetail> {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(10.0),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 8.0),

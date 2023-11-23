@@ -10,25 +10,43 @@ class GameLogic {
   final ArticleService articleService = ArticleService();
   final WordAnalyzer wordAnalyzer = WordAnalyzer();
   Article currentArticle;
+  String gameMode;
 
-  GameLogic(this.currentArticle);
+  GameLogic(this.gameMode, this.currentArticle);
 
   Future<void> fetchNewArticle() async {
     try {
-      var articleData = await articleService.fetchRandomWikipediaArticle();
+      var articleData = gameMode == "infernal_mode"
+          ? await articleService.fetchRandomWikipediaArticle()
+          : await articleService.fetchRandomArticle();
 
       if (articleData != null) {
-        currentArticle = Article(
-          id: articleData['id'] ?? '',
-          title: articleData['title'],
-          url: articleData['url'],
-          content: articleData['contentToShow'],
-          theme: articleData['theme'] ?? '',
-          difficulty: articleData['difficulty'] ?? '',
-          hints: List<String>.from(articleData['hints'] ?? []),
-          revealedWords: {},
-          bestGuesses: {},
-        );
+        Log.logger.i("currentArticle: $articleData");
+        currentArticle = gameMode == "infernal_mode"
+            ? Article(
+                id: articleData['id'] ?? '',
+                title: articleData['title'],
+                url: articleData['url'],
+                content: articleData['contentToShow'],
+                theme: articleData['theme'] ?? '',
+                difficulty: articleData['difficulty'] ?? '',
+                hints: List<String>.from(articleData['hints'] ?? []),
+                revealedWords: {},
+                bestGuesses: {},
+              )
+            : Article(
+                id: articleData.id ?? '',
+                title: articleData.title,
+                url: articleData.url,
+                content: articleData.content,
+                theme: articleData.theme ?? '',
+                difficulty: articleData.difficulty ?? '',
+                hints: List<String>.from(articleData.hints ?? []),
+                revealedWords: {},
+                bestGuesses: {},
+              );
+
+        Log.logger.i("2");
         await saveGameState();
       }
     } catch (e) {
@@ -39,12 +57,12 @@ class GameLogic {
   Future<void> saveGameState() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString(
-        'current_article', json.encode(currentArticle.toJson()));
+        '$gameMode current_article', json.encode(currentArticle.toJson()));
   }
 
   Future<bool> loadGameState() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? articleJsonStr = prefs.getString('current_article');
+    String? articleJsonStr = prefs.getString('$gameMode current_article');
     if (articleJsonStr != null) {
       currentArticle = Article.fromJson(json.decode(articleJsonStr));
       return true;
