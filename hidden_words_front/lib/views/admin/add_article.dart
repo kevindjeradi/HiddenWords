@@ -17,6 +17,12 @@ class AddArticleState extends State<AddArticle> {
   final ArticleService articleService = ArticleService();
   bool loading = false;
 
+  @override
+  void initState() {
+    fetchArticle();
+    super.initState();
+  }
+
   void fetchArticle() async {
     setState(() {
       loading = true;
@@ -45,21 +51,17 @@ class AddArticleState extends State<AddArticle> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Créer un article'),
-      ),
-      body: currentArticle == null
-          ? loading
-              ? const Center(child: CircularProgressIndicator())
-              : Center(
-                  child: ElevatedButton(
-                    onPressed: fetchArticle,
-                    child: const Text('Récupérer un article'),
-                  ),
-                )
-          : loading
-              ? const Center(child: CircularProgressIndicator())
-              : ArticleDetail(article: currentArticle!),
-    );
+        appBar: AppBar(
+          title: const Text('Créer un article'),
+        ),
+        body: loading
+            ? const Center(child: CircularProgressIndicator())
+            : Column(
+                children: [
+                  IconButton(
+                      onPressed: fetchArticle, icon: const Icon(Icons.refresh)),
+                  ArticleDetail(article: currentArticle!),
+                ],
+              ));
   }
 }
