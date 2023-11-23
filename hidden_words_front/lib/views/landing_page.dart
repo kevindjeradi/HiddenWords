@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:hidden_words_front/views/admin/admin.dart';
 import 'package:hidden_words_front/views/gamemodes/infernal_mode.dart';
+import 'package:hidden_words_front/views/gamemodes/normal_mode.dart';
 
 class LandingPage extends StatefulWidget {
   const LandingPage({super.key});
@@ -52,11 +53,15 @@ class _LandingPageState extends State<LandingPage> {
                     SizedBox(
                       width: 200,
                       child: ElevatedButton(
-                        style: ButtonStyle(
-                            backgroundColor:
-                                MaterialStateProperty.all(Colors.grey[400])),
-                        onPressed: () {},
-                        child: const Text('Mode normal (à venir)'),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const NormalMode(),
+                            ),
+                          );
+                        },
+                        child: const Text('Mode normal'),
                       ),
                     ),
                     SizedBox(
