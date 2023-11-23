@@ -34,6 +34,20 @@ class ArticleService {
     }
   }
 
+  Future<Article> fetchRandomArticle() async {
+    try {
+      final response = await Api().get('/random-article');
+      if (response.statusCode == 200) {
+        return Article.fromJson(json.decode(response.body));
+      } else {
+        throw Exception('Failed to load random article');
+      }
+    } catch (e) {
+      Log.logger.e("Error in fetchRandomArticle: $e");
+      rethrow;
+    }
+  }
+
   Future<void> createArticle(Article article) async {
     try {
       final response = await Api().post(
