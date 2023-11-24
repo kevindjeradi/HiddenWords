@@ -77,6 +77,29 @@ class InfernalModeState extends State<InfernalMode> {
     return "!.,;:'\"?()-".contains(word);
   }
 
+  Widget _buildTitleContainer(String title, bool isVisible) {
+    String displayTitle =
+        isTextVisible || gameLogic.currentArticle.revealedWords.contains(title)
+            ? title
+            : ' ' * gameLogic.currentArticle.title.length;
+
+    return Container(
+      padding: const EdgeInsets.all(8.0),
+      margin: const EdgeInsets.symmetric(vertical: 16.0),
+      decoration: BoxDecoration(
+        color: Colors.blue.shade100,
+        borderRadius: BorderRadius.circular(4.0),
+      ),
+      child: Text(
+        displayTitle,
+        style: const TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 24,
+        ),
+      ),
+    );
+  }
+
   Widget _buildWordContainer(
     String word,
     bool isBestGuess,
@@ -128,9 +151,12 @@ class InfernalModeState extends State<InfernalMode> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Text(
+                                _buildTitleContainer(
                                   gameLogic.currentArticle.title,
-                                  style: const TextStyle(fontSize: 24),
+                                  isTextVisible ||
+                                      gameLogic.currentArticle.revealedWords
+                                          .contains(
+                                              gameLogic.currentArticle.title),
                                 ),
                                 IconButton(
                                   onPressed: () {
@@ -231,6 +257,10 @@ class InfernalModeState extends State<InfernalMode> {
                   onPressed: () {
                     String inputWord = inputWordController.text;
                     if (inputWord.isNotEmpty) {
+                      if (inputWord == gameLogic.currentArticle.title) {
+                        revealWord(
+                            gameLogic.currentArticle.title, inputWord, 1.0);
+                      }
                       WordAnalyzer().findSimilarWords(
                           inputWord, gameLogic.currentArticle.content,
                           (String word, String guess, double similarity) {
