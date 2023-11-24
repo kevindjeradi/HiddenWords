@@ -75,8 +75,15 @@ class GameLogic {
       return;
     }
     if (similarity == 1) {
-      currentArticle.revealedWords.add(word);
-      currentArticle.bestGuesses.remove(word);
+      if (word.toLowerCase() == guess.toLowerCase()) {
+        currentArticle.revealedWords.add(word);
+        currentArticle.bestGuesses.remove(word);
+      } else if (!currentArticle.bestGuesses.containsKey(word) ||
+          similarity >=
+              wordAnalyzer.getSimilarity(
+                  currentArticle.bestGuesses[word], word)) {
+        currentArticle.bestGuesses[word] = guess;
+      }
     } else if (!currentArticle.bestGuesses.containsKey(word) ||
         similarity >=
             wordAnalyzer.getSimilarity(
