@@ -11,30 +11,47 @@ class WordAnalyzer {
     return TermSimilarity(guess, word).characterSimilarity;
   }
 
+  String normalize(String word) {
+    Map<String, String> diacriticsMap = {
+      'à': 'a', 'á': 'a', 'â': 'a', 'ä': 'a', // Add more mappings as needed
+      // ... other diacritic mappings ...
+    };
+
+    String normalized = word
+        .split('')
+        .map((c) {
+          String normalizedChar = diacriticsMap[c] ?? c;
+          Log.logger.i("Character: $c, Normalized: $normalizedChar");
+          return normalizedChar;
+        })
+        .join()
+        .toLowerCase();
+
+    Log.logger.i("Original: $word, Normalized: $normalized");
+    return normalized;
+  }
+
   void findSimilarWords(
       String inputWord, String inputText, Function revealWordCallback) {
     String cleanedInputWord = removePunctuation(inputWord);
+    String normalizedInputWord = normalize(cleanedInputWord);
+
     List<String> wordsInText = inputText.split(' ');
 
     for (String word in wordsInText) {
       String cleanedWord = removePunctuation(word);
-      TermSimilarity similarity = TermSimilarity(cleanedInputWord, cleanedWord);
+      String normalizedWord = normalize(cleanedWord);
+
+      Log.logger
+          .i("Normalized Words: $normalizedInputWord <-> $normalizedWord");
+
+      TermSimilarity similarity =
+          TermSimilarity(normalizedInputWord, normalizedWord);
 
       if (similarity.characterSimilarity >= 0.65) {
         Log.logger.i(
             "Similarité de zinzin: $inputWord <-> $word (Similarité: ${similarity.characterSimilarity})");
         revealWordCallback(word, inputWord, similarity.characterSimilarity);
-      } else if (similarity.characterSimilarity > 0.5 &&
-          similarity.characterSimilarity < 0.65) {
-        Log.logger.i(
-            "similarité okay tier: $inputWord <-> $word (Similarité: ${similarity.characterSimilarity})");
-      } else if (similarity.characterSimilarity > 0.3 &&
-          similarity.characterSimilarity < 0.5) {
-        // Log.logger.i(
-        //     "similarité moyenne: $inputWord <-> $word (Similarité: ${similarity.characterSimilarity})");
-      } else {
-        // Log.logger.i(
-        //     "Similarité claquée au sol: $inputWord <-> $word (Similarité: ${similarity.characterSimilarity})");
       }
     }
   }
