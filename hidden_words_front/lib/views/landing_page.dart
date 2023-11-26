@@ -71,7 +71,7 @@ class _LandingPageState extends State<LandingPage> {
                             backgroundColor:
                                 MaterialStateProperty.all(Colors.grey[400])),
                         onPressed: () {},
-                        child: const Text('Mode à thème (à venir)'),
+                        child: const Text('Mode par difficulté (à venir)'),
                       ),
                     ),
                   ],
