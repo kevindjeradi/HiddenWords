@@ -16,6 +16,7 @@ class NormalModeState extends State<NormalMode> {
   late GameLogic gameLogic;
   bool isTextVisible = false;
   bool loading = false;
+  bool hasWon = false;
 
   @override
   void initState() {
@@ -58,6 +59,8 @@ class NormalModeState extends State<NormalMode> {
 
   void getNewArticle() async {
     setState(() {
+      inputWordController.clear();
+      hasWon = false;
       loading = true;
     });
     await gameLogic.fetchNewArticle();
@@ -70,7 +73,41 @@ class NormalModeState extends State<NormalMode> {
     setState(() {
       gameLogic.revealWord(word, guess, similarity);
       gameLogic.saveGameState();
+
+      if (word == gameLogic.currentArticle.title &&
+          similarity == 1.0 &&
+          word.toLowerCase() == guess.toLowerCase() &&
+          !hasWon) {
+        hasWon = true;
+        revealAllWords();
+        showWinDialog();
+      }
     });
+  }
+
+  void revealAllWords() {
+    var words = gameLogic.currentArticle.content.split(RegExp(r'\s+'));
+    gameLogic.currentArticle.revealedWords.addAll(words);
+  }
+
+  void showWinDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Congratulations!'),
+          content: const Text('You found the title of the article!'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   bool isPunctuation(String word) {
@@ -94,7 +131,7 @@ class NormalModeState extends State<NormalMode> {
         displayTitle,
         style: const TextStyle(
           fontWeight: FontWeight.bold,
-          fontSize: 24, // You can adjust the font size as needed
+          fontSize: 24,
         ),
       ),
     );
@@ -148,6 +185,28 @@ class NormalModeState extends State<NormalMode> {
                       : Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 8, horizontal: 16),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    gameLogic.currentArticle.difficulty,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  Text(
+                                    gameLogic.currentArticle.theme,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
@@ -244,32 +303,52 @@ class NormalModeState extends State<NormalMode> {
             padding: const EdgeInsets.all(16.0),
             child: Column(
               children: [
-                SizedBox(
-                  width: 100,
-                  child: TextField(
-                    controller: inputWordController,
-                    decoration: const InputDecoration(
-                      hintText: "Tapez un mot",
-                    ),
-                  ),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    String inputWord = inputWordController.text;
-                    if (inputWord.isNotEmpty) {
-                      if (inputWord == gameLogic.currentArticle.title) {
-                        revealWord(
-                            gameLogic.currentArticle.title, inputWord, 1.0);
-                      }
-                      WordAnalyzer().findSimilarWords(
-                          inputWord, gameLogic.currentArticle.content,
-                          (String word, String guess, double similarity) {
-                        revealWord(word, guess, similarity);
-                      });
-                    }
-                  },
-                  child: const Text("Chercher"),
-                ),
+                !hasWon
+                    ? SizedBox(
+                        width: 100,
+                        child: TextField(
+                          controller: inputWordController,
+                          decoration: const InputDecoration(
+                            hintText: "Tapez un mot",
+                          ),
+                        ),
+                      )
+                    : const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 8.0),
+                        child: Text(
+                          "Bravo ! Vous avez trouvé l'article !",
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: Colors.green,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                !hasWon
+                    ? ElevatedButton(
+                        onPressed: () {
+                          String inputWord = inputWordController.text;
+                          if (inputWord.isNotEmpty) {
+                            if (inputWord == gameLogic.currentArticle.title) {
+                              revealWord(gameLogic.currentArticle.title,
+                                  inputWord, 1.0);
+                            }
+                            WordAnalyzer().findSimilarWords(
+                                inputWord, gameLogic.currentArticle.content,
+                                (String word, String guess, double similarity) {
+                              revealWord(word, guess, similarity);
+                            });
+                          }
+                        },
+                        child: const Text("Chercher"),
+                      )
+                    : ElevatedButton(
+                        onPressed: () {
+                          getNewArticle();
+                        },
+                        child: const Text("Nouvel article"),
+                      ),
               ],
             ),
           ),
