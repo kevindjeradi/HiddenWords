@@ -51,7 +51,7 @@ class ListArticlesState extends State<ListArticles> {
                       appBar: AppBar(
                         title: const Text("Modifier un article"),
                       ),
-                      body: ArticleDetail(article: article)),
+                      body: ArticleDetail(article: article, createMode: false)),
                 ),
               );
             },

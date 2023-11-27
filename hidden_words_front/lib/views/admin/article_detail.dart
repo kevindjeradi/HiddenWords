@@ -8,11 +8,10 @@ import 'package:url_launcher/url_launcher.dart';
 
 class ArticleDetail extends StatefulWidget {
   final Article article;
+  final bool createMode;
 
-  const ArticleDetail({
-    super.key,
-    required this.article,
-  });
+  const ArticleDetail(
+      {super.key, required this.article, this.createMode = true});
 
   @override
   ArticleDetailState createState() => ArticleDetailState();
@@ -41,9 +40,13 @@ class ArticleDetailState extends State<ArticleDetail> {
             ? currentArticle.difficulty
             : articlesDifficulties.first;
 
-    hintControllers = currentArticle.hints
-        .map((hint) => TextEditingController(text: hint))
-        .toList();
+    if (currentArticle.hints.isEmpty) {
+      hintControllers.add(TextEditingController());
+    } else {
+      hintControllers = currentArticle.hints
+          .map((hint) => TextEditingController(text: hint))
+          .toList();
+    }
   }
 
   void _launchURL() async {
@@ -77,7 +80,9 @@ class ArticleDetailState extends State<ArticleDetail> {
         content: contentController.text,
         hints: hintControllers.map((controller) => controller.text).toList(),
       );
-      await articleService.updateArticle(updatedArticle);
+      widget.createMode
+          ? await articleService.createArticle(updatedArticle)
+          : await articleService.updateArticle(updatedArticle);
       // Assuming updateArticle is a method in ArticleService for saving changes
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Article updated successfully')),
