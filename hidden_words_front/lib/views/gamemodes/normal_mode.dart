@@ -71,12 +71,23 @@ class NormalModeState extends State<NormalMode> {
 
   void revealWord(String word, String guess, double similarity) {
     setState(() {
-      gameLogic.revealWord(word, guess, similarity);
+      // Normalize the word and guess
+      String normalizedWord = WordAnalyzer().normalize(word);
+
+      // Reveal both the original and normalized word if similarity is 1
+      if (similarity == 1.0) {
+        gameLogic.currentArticle.revealedWords.add(word);
+        if (normalizedWord != word) {
+          gameLogic.currentArticle.revealedWords.add(normalizedWord);
+        }
+      }
+
+      // Save the game state
       gameLogic.saveGameState();
 
+      // Check if the user has won (based on the original word)
       if (word == gameLogic.currentArticle.title &&
           similarity == 1.0 &&
-          word.toLowerCase() == guess.toLowerCase() &&
           !hasWon) {
         hasWon = true;
         revealAllWords();
@@ -143,6 +154,16 @@ class NormalModeState extends State<NormalMode> {
     bool isObfuscated, {
     bool isTitle = false,
   }) {
+    // Normalize the word for comparison
+    String normalizedWord = WordAnalyzer().normalize(word);
+
+    // Check if either the original word or its normalized version is revealed
+    bool isRevealed = gameLogic.currentArticle.revealedWords.contains(word) ||
+        gameLogic.currentArticle.revealedWords.contains(normalizedWord);
+
+    // Determine the display word based on whether it's revealed or obfuscated
+    String displayWord = isTextVisible || isRevealed ? word : ' ' * word.length;
+
     return Container(
       padding: const EdgeInsets.all(8.0),
       margin: isTitle
@@ -153,7 +174,7 @@ class NormalModeState extends State<NormalMode> {
         borderRadius: BorderRadius.circular(4.0),
       ),
       child: Text(
-        word,
+        displayWord,
         style: TextStyle(
           fontStyle:
               isObfuscated && isBestGuess ? FontStyle.italic : FontStyle.normal,
