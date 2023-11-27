@@ -1,3 +1,4 @@
+// logic/world_analyzer.dart
 import 'package:hidden_words_front/helpers/logger.dart';
 import 'package:text_analysis/text_analysis.dart';
 
