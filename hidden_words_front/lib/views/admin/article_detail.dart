@@ -83,14 +83,21 @@ class ArticleDetailState extends State<ArticleDetail> {
       widget.createMode
           ? await articleService.createArticle(updatedArticle)
           : await articleService.updateArticle(updatedArticle);
-      // Assuming updateArticle is a method in ArticleService for saving changes
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Article updated successfully')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text(
+                  'Article ${widget.createMode ? 'created' : 'updated'} successfully')),
+        );
+      }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to update article')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text(
+                  'Failed to ${widget.createMode ? 'create' : 'update'} article')),
+        );
+      }
     } finally {
       setState(() {
         loading = false;
