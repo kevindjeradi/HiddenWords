@@ -16,6 +16,7 @@ class InfernalModeState extends State<InfernalMode> {
   late GameLogic gameLogic;
   bool isTextVisible = false;
   bool loading = false;
+  bool hasWon = false;
 
   @override
   void initState() {
@@ -58,6 +59,8 @@ class InfernalModeState extends State<InfernalMode> {
 
   void getNewArticle() async {
     setState(() {
+      inputWordController.clear();
+      hasWon = false;
       loading = true;
     });
     await gameLogic.fetchNewArticle();
@@ -68,9 +71,50 @@ class InfernalModeState extends State<InfernalMode> {
 
   void revealWord(String word, String guess, double similarity) {
     setState(() {
-      gameLogic.revealWord(word, guess, similarity);
+      String normalizedWord = WordAnalyzer().normalize(word);
+
+      if (similarity == 1.0) {
+        gameLogic.currentArticle.revealedWords.add(word);
+        if (normalizedWord != word) {
+          gameLogic.currentArticle.revealedWords.add(normalizedWord);
+        }
+      }
+
       gameLogic.saveGameState();
+
+      if (word == gameLogic.currentArticle.title &&
+          similarity == 1.0 &&
+          !hasWon) {
+        hasWon = true;
+        revealAllWords();
+        showWinDialog();
+      }
     });
+  }
+
+  void revealAllWords() {
+    var words = gameLogic.currentArticle.content.split(RegExp(r'\s+'));
+    gameLogic.currentArticle.revealedWords.addAll(words);
+  }
+
+  void showWinDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Congratulations!'),
+          content: const Text('You found the title of the article!'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   bool isPunctuation(String word) {
@@ -106,6 +150,13 @@ class InfernalModeState extends State<InfernalMode> {
     bool isObfuscated, {
     bool isTitle = false,
   }) {
+    String normalizedWord = WordAnalyzer().normalize(word);
+
+    bool isRevealed = gameLogic.currentArticle.revealedWords.contains(word) ||
+        gameLogic.currentArticle.revealedWords.contains(normalizedWord);
+
+    String displayWord = isTextVisible || isRevealed ? word : ' ' * word.length;
+
     return Container(
       padding: const EdgeInsets.all(8.0),
       margin: isTitle
@@ -116,7 +167,7 @@ class InfernalModeState extends State<InfernalMode> {
         borderRadius: BorderRadius.circular(4.0),
       ),
       child: Text(
-        word,
+        displayWord,
         style: TextStyle(
           fontStyle:
               isObfuscated && isBestGuess ? FontStyle.italic : FontStyle.normal,
