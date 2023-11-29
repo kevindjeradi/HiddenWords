@@ -82,9 +82,13 @@ class InfernalModeState extends State<InfernalMode> {
 
       gameLogic.saveGameState();
 
-      if (word == gameLogic.currentArticle.title &&
-          similarity == 1.0 &&
-          !hasWon) {
+      var allWords = gameLogic.currentArticle.content.split(RegExp(r'\s+'));
+      bool allRevealed = allWords.every((word) =>
+          gameLogic.currentArticle.revealedWords.contains(word) ||
+          gameLogic.currentArticle.revealedWords
+              .contains(WordAnalyzer().normalize(word)));
+
+      if (allRevealed && !hasWon) {
         hasWon = true;
         revealAllWords();
         showWinDialog();
